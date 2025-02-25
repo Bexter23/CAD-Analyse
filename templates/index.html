@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEP-AP242 Comparison Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --text-light: #f8f9fa;
+            --text-dark: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 2rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .dark-mode-toggle {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* File upload styling */
+        .file-input {
+            display: none;
+        }
+        
+        .file-info {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .file-preview {
+            width: 100%;
+            height: 150px;
+            background-color: #f1f1f1;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress {
+            height: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="bi bi-layers me-2"></i>
+                <span>STEP Analyzer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <div class="dark-mode-toggle text-light" id="darkModeToggle">
+                            <i class="bi bi-moon-fill"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">STEP-AP242 Comparison Tool</h1>
+            <p class="lead mb-4">Compare STEP files to identify differences in geometry, structure, and metadata</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row justify-content-center animate-fade-in">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-center mb-4">Upload STEP Files for Comparison</h2>
+                        
+                        <form action="/compare" method="post" enctype="multipart/form-data" id="uploadForm">
+                            <div class="row">
+                                <!-- First File Upload -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="upload-area" id="uploadArea1">
+                                        <i class="bi bi-cloud-arrow-up feature-icon"></i>
+                                        <h5>First STEP File</h5>
+                                        <p class="text-muted">Click to browse or drag & drop</p>
+                                        <input type="file" name="file1" id="file1" class="file-input" accept=".stp,.step,.p21">
+                                    </div>
+                                    <div class="file-info" id="fileInfo1">
+                                        <div class="file-preview" id="filePreview1">
+                                            <i class="bi bi-file-earmark-binary" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span id="fileName1" class="text-truncate"></span>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" id="removeFile1">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Second File Upload -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="upload-area" id="uploadArea2">
+                                        <i class="bi bi-cloud-arrow-up feature-icon"></i>
+                                        <h5>Second STEP File</h5>
+                                        <p class="text-muted">Click to browse or drag & drop</p>
+                                        <input type="file" name="file2" id="file2" class="file-input" accept=".stp,.step,.p21">
+                                    </div>
+                                    <div class="file-info" id="fileInfo2">
+                                        <div class="file-preview" id="filePreview2">
+                                            <i class="bi bi-file-earmark-binary" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span id="fileName2" class="text-truncate"></span>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" id="removeFile2">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg px-5" id="compareBtn" disabled>
+                                    <i class="bi bi-arrow-left-right me-2"></i>Compare Files
+                                </button>
+                            </div>
+                            
+                            <div class="progress mt-4" id="uploadProgress" style="display: none;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="row mt-5 pt-5" id="features">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold">Key Features</h2>
+                <p class="text-muted">Powerful tools for STEP file comparison and analysis</p>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-4 text-center">
+                    <i class="bi bi-boxes feature-icon"></i>
+                    <h4>Geometric Analysis</h4>
+                    <p>Compare volumes, surface areas, and dimensions between models with precise measurements.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-4 text-center">
+                    <i class="bi bi-eye feature-icon"></i>
+                    <h4>Visual Comparison</h4>
+                    <p>Interactive 3D visualization with color-coded differences to easily identify changes.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-4 text-center">
+                    <i class="bi bi-list-check feature-icon"></i>
+                    <h4>Metadata Analysis</h4>
+                    <p>Compare entity types, relationships, and manufacturing information between models.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Section -->
+        <div class="row mt-5 pt-5" id="about">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold">About STEP Analyzer</h2>
+                <p class="text-muted">Understanding the technology behind our tool</p>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 p-4">
+                    <h4>What is STEP-AP242?</h4>
+                    <p>STEP-AP242 (ISO 10303-242) is an international standard for exchanging product manufacturing information between different CAD systems and throughout the product lifecycle.</p>
+                    <p>It enables the exchange of 3D models, assembly structures, product manufacturing information (PMI), and metadata across different software platforms.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 p-4">
+                    <h4>Our Technology</h4>
+                    <p>STEP Analyzer uses advanced algorithms to parse and compare STEP files, identifying differences in geometry, structure, and metadata.</p>
+                    <p>The tool leverages OpenCascade Technology (OCCT) for 3D visualization and geometric operations, providing accurate and detailed comparison results.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-layers me-2"></i> STEP Analyzer</h5>
+                    <p>A powerful tool for comparing and analyzing STEP-AP242 files.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2025 STEP Analyzer. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dark mode toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            const icon = darkModeToggle.querySelector('i');
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+            }
+            
+            darkModeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                
+                if (body.classList.contains('dark-mode')) {
+                    icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // File upload handling
+            function setupFileUpload(fileInputId, uploadAreaId, fileInfoId, fileNameId, removeFileId, filePreviewId) {
+                const fileInput = document.getElementById(fileInputId);
+                const uploadArea = document.getElementById(uploadAreaId);
+                const fileInfo = document.getElementById(fileInfoId);
+                const fileName = document.getElementById(fileNameId);
+                const removeFile = document.getElementById(removeFileId);
+                
+                uploadArea.addEventListener('click', function() {
+                    fileInput.click();
+                });
+                
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#3498db';
+                    uploadArea.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+                });
+                
+                uploadArea.addEventListener('dragleave', function() {
+                    uploadArea.style.borderColor = '#ccc';
+                    uploadArea.style.backgroundColor = '';
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#ccc';
+                    uploadArea.style.backgroundColor = '';
+                    
+                    if (e.dataTransfer.files.length) {
+                        fileInput.files = e.dataTransfer.files;
+                        handleFileSelect(fileInput);
+                    }
+                });
+                
+                fileInput.addEventListener('change', function() {
+                    handleFileSelect(fileInput);
+                });
+                
+                removeFile.addEventListener('click', function() {
+                    fileInput.value = '';
+                    uploadArea.style.display = 'block';
+                    fileInfo.style.display = 'none';
+                    updateCompareButton();
+                });
+                
+                function handleFileSelect(input) {
+                    if (input.files && input.files[0]) {
+                        const file = input.files[0];
+                        fileName.textContent = file.name;
+                        uploadArea.style.display = 'none';
+                        fileInfo.style.display = 'block';
+                        updateCompareButton();
+                    }
+                }
+            }
+            
+            setupFileUpload('file1', 'uploadArea1', 'fileInfo1', 'fileName1', 'removeFile1', 'filePreview1');
+            setupFileUpload('file2', 'uploadArea2', 'fileInfo2', 'fileName2', 'removeFile2', 'filePreview2');
+            
+            // Update compare button state
+            function updateCompareButton() {
+                const file1 = document.getElementById('file1').files[0];
+                const file2 = document.getElementById('file2').files[0];
+                const compareBtn = document.getElementById('compareBtn');
+                
+                if (file1 && file2) {
+                    compareBtn.disabled = false;
+                } else {
+                    compareBtn.disabled = true;
+                }
+            }
+            
+            // Form submission
+            const uploadForm = document.getElementById('uploadForm');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressBar = uploadProgress.querySelector('.progress-bar');
+            
+            uploadForm.addEventListener('submit', function(e) {
+                const file1 = document.getElementById('file1').files[0];
+                const file2 = document.getElementById('file2').files[0];
+                
+                if (!file1 || !file2) {
+                    e.preventDefault();
+                    alert('Please select two STEP files for comparison.');
+                    return;
+                }
+                
+                // Show progress bar
+                uploadProgress.style.display = 'block';
+                
+                // Simulate upload progress (in a real app, you'd use AJAX with progress events)
+                let progress = 0;
+                const interval = setInterval(function() {
+                    progress += 5;
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                    }
+                }, 150);
+            });
+            
+            // Drag and drop functionality
+            function setupDragDrop(uploadAreaId, fileInputId) {
+                const uploadArea = document.getElementById(uploadAreaId);
+                const fileInput = document.getElementById(fileInputId);
+                
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
+                });
+                
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, highlight, false);
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, unhighlight, false);
+                });
+                
+                function highlight() {
+                    uploadArea.classList.add('highlight');
+                }
+                
+                function unhighlight() {
+                    uploadArea.classList.remove('highlight');
+                }
+                
+                uploadArea.addEventListener('drop', handleDrop, false);
+                
+                function handleDrop(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        const event = new Event('change');
+                        fileInput.dispatchEvent(event);
+                    }
+                }
+            }
+            
+            // Set up drag and drop for both upload areas
+            setupDragDrop('uploadArea1', 'file1');
+            setupDragDrop('uploadArea2', 'file2');
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Alt+C to compare (when button is enabled)
+                if (e.altKey && e.key === 'c') {
+                    const compareBtn = document.getElementById('compareBtn');
+                    if (!compareBtn.disabled) {
+                        compareBtn.click();
+                    }
+                }
+                
+                // Alt+1 to focus on file 1 upload
+                if (e.altKey && e.key === '1') {
+                    document.getElementById('file1').click();
+                }
+                
+                // Alt+2 to focus on file 2 upload
+                if (e.altKey && e.key === '2') {
+                    document.getElementById('file2').click();
+                }
+                
+                // Alt+R to reset/clear files
+                if (e.altKey && e.key === 'r') {
+                    if (document.getElementById('fileInfo1').style.display === 'block') {
+                        document.getElementById('removeFile1').click();
+                    }
+                    if (document.getElementById('fileInfo2').style.display === 'block') {
+                        document.getElementById('removeFile2').click();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
